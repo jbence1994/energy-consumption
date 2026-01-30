@@ -12,6 +12,7 @@ def bronze_etl():
     bronze_data_frame = (spark
                          .read
                          .option("header", "true")
+                         .option("inferSchema", "true")
                          .csv(env.get("DATA")))
 
     (bronze_data_frame

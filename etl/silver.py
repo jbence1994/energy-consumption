@@ -2,7 +2,6 @@ from os import environ as env
 
 from pyspark.sql import SparkSession, Window
 from pyspark.sql.functions import col, lead
-from pyspark.sql.types import IntegerType
 
 
 def silver_etl():
@@ -14,12 +13,6 @@ def silver_etl():
     silver_data_frame = (spark
                          .read
                          .parquet(env.get("MEDALLION_BRONZE")))
-
-    silver_data_frame = (silver_data_frame
-                         .withColumn("year", col("year").cast(IntegerType()))
-                         .withColumn("month", col("month").cast(IntegerType()))
-                         .withColumn("day", col("day").cast(IntegerType()))
-                         .withColumn("meter_kwh", col("meter_kwh").cast("int")))
 
     silver_data_frame = (silver_data_frame.withColumn(
         colName="daily_kwh",
