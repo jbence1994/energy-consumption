@@ -22,13 +22,17 @@ def gold_etl():
         max("daily_kwh").alias("max_kwh")
     )
 
+    DISCOUNTED_KWH_PRICE_HUF = 36
+    KWH_PRICE_HUF = 70
+    KWH_DISCOUNT_LIMIT = 210
+
     gold_data_frame = (gold_data_frame.withColumn(
         colName="approx_total_price_huf",
         col=when(
-            col("sum_kwh") > 210,
-            (210 * 36 + (col("sum_kwh") - 210) * 70)
+            col("sum_kwh") > KWH_DISCOUNT_LIMIT,
+            (KWH_DISCOUNT_LIMIT * DISCOUNTED_KWH_PRICE_HUF + (col("sum_kwh") - KWH_DISCOUNT_LIMIT) * KWH_PRICE_HUF)
         )
-        .otherwise(col("sum_kwh") * 36)
+        .otherwise(col("sum_kwh") * DISCOUNTED_KWH_PRICE_HUF)
         .cast(DecimalType(10, 0))
     ).orderBy("year", "month"))
 
