@@ -1,7 +1,7 @@
 from os import environ as env
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import sum, avg, min, max, col, when
+from pyspark.sql.functions import col, when, round, sum, avg, min, max
 from pyspark.sql.types import DecimalType
 
 
@@ -17,7 +17,7 @@ def gold_etl():
 
     gold_data_frame = gold_data_frame.groupBy("year", "month").agg(
         sum("daily_kwh").alias("sum_kwh"),
-        avg("daily_kwh").alias("avg_kwh"),
+        round(avg("daily_kwh"), 2).alias("avg_kwh"),
         min("daily_kwh").alias("min_kwh"),
         max("daily_kwh").alias("max_kwh")
     )
