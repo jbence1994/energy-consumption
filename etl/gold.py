@@ -30,7 +30,7 @@ def gold_etl():
         )
         .otherwise(col("sum_kwh") * 36)
         .cast(DecimalType(10, 0))
-    ).orderBy("year"))
+    ).orderBy("year", "month"))
 
     (gold_data_frame
      .write
