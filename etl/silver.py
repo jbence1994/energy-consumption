@@ -16,8 +16,8 @@ def silver_etl():
 
     silver_data_frame = (silver_data_frame.withColumn(
         colName="daily_kwh",
-        col=lead("meter_kwh").over(Window.orderBy("year", "month", "day")) - col("meter_kwh"))
-    )
+        col=lead("kwh").over(Window.orderBy("year", "month", "day")) - col("kwh")
+    ))
 
     silver_data_frame = silver_data_frame.dropna()
 
