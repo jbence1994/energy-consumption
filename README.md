@@ -1,3 +1,3 @@
-# energy-consumption
+# Energy Consumption
 
 Energy Consumption Data Pipeline.
