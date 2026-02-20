@@ -1,18 +1,15 @@
 from os import environ as env
 
-from pyspark.sql import SparkSession, Window
+from pyspark.sql import Window
 from pyspark.sql.functions import col, lead
+
+from etl.helpers import get_spark_session, read_parquet, write_parquet_with_partitions
 
 
 def silver_etl():
-    spark = (SparkSession.builder
-             .master("local[*]")
-             .appName("energy_consumption_silver")
-             .getOrCreate())
+    spark = get_spark_session("energy_consumption_silver")
 
-    silver_data_frame = (spark
-                         .read
-                         .parquet(env.get("MEDALLION_BRONZE")))
+    silver_data_frame = read_parquet(spark, env.get("MEDALLION_BRONZE"))
 
     silver_data_frame = (silver_data_frame.withColumn(
         colName="daily_kwh",
@@ -21,11 +18,7 @@ def silver_etl():
 
     silver_data_frame = silver_data_frame.dropna()
 
-    (silver_data_frame
-     .write
-     .mode("overwrite")
-     .partitionBy("year", "month")
-     .parquet(env.get("MEDALLION_SILVER")))
+    write_parquet_with_partitions(silver_data_frame, env.get("MEDALLION_SILVER"), "year", "month")
 
     spark.stop()
 

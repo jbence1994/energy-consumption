@@ -1,24 +1,14 @@
 from os import environ as env
 
-from pyspark.sql import SparkSession
+from etl.helpers import get_spark_session, read_csv, write_parquet
 
 
 def bronze_etl():
-    spark = (SparkSession.builder
-             .master("local[*]")
-             .appName("energy_consumption_bronze")
-             .getOrCreate())
+    spark = get_spark_session("energy_consumption_bronze")
 
-    bronze_data_frame = (spark
-                         .read
-                         .option("header", "true")
-                         .option("inferSchema", "true")
-                         .csv(env.get("DATA")))
+    bronze_data_frame = read_csv(spark, env.get("DATA"))
 
-    (bronze_data_frame
-     .write
-     .mode("overwrite")
-     .parquet(env.get("MEDALLION_BRONZE")))
+    write_parquet(bronze_data_frame, env.get("MEDALLION_BRONZE"))
 
     spark.stop()
 
