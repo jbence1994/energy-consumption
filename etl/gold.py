@@ -5,6 +5,10 @@ from pyspark.sql.types import DecimalType
 
 from etl.helpers import get_spark_session, read_parquet, write_parquet
 
+DISCOUNTED_KWH_PRICE_HUF = 36
+KWH_PRICE_HUF = 70
+KWH_DISCOUNT_LIMIT = 210
+
 
 def gold_etl():
     spark = get_spark_session("energy_consumption_gold")
@@ -17,10 +21,6 @@ def gold_etl():
         min("daily_kwh").alias("min_kwh"),
         max("daily_kwh").alias("max_kwh")
     )
-
-    DISCOUNTED_KWH_PRICE_HUF = 36
-    KWH_PRICE_HUF = 70
-    KWH_DISCOUNT_LIMIT = 210
 
     gold_data_frame = (gold_data_frame.withColumn(
         colName="approx_total_price_huf",
